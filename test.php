@@ -12,15 +12,15 @@ class DocCreater{
 
     public function printkeys($keys,&$index){
         $step=20;
-        foreach($keys as $kk=>$kkv){
-            if(is_array($kkv)){
-                echo "<div style='padding-left: ".($index*$step)."px'>".$kk."：</div>";
+        foreach($keys as $k=>$v){
+            if(is_array($v)){
+                echo "<div style='padding-left: ".($index*$step)."px'>".$k."：</div>";
                 $index++;
-                $this->printkeys($kkv,$index);
+                $this->printkeys($v,$index);
                 $index--;
             }
             else{
-                echo "<div style='padding-left: ".($index*$step)."px'>".$kk."：".$kkv."</div>";
+                echo "<div style='padding-left: ".($index*$step)."px'>".$k."：".$v."</div>";
             }
 
         }

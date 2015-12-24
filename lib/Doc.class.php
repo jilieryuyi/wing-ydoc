@@ -153,7 +153,7 @@ class Doc{
             $line=explode("@",$v);
             unset($line[0]);
             $line=implode("@",$line);
-            if(strpos($line,$key)===0){
+            if(strpos($line,$key." ")===0){
                 $retruns[]=trim(preg_replace("/".$key."/","",$line,1));
             }
         }
