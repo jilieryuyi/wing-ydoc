@@ -11,15 +11,16 @@ include_once('lib/Doc.class.php');
 class DocCreater{
 
     public function printkeys($keys,&$index){
+        $step=20;
         foreach($keys as $kk=>$kkv){
             if(is_array($kkv)){
+                echo "<div style='padding-left: ".($index*$step)."px'>".$kk."：</div>";
                 $index++;
-                echo "<div style='padding-left: ".($index*10)."px'>".$kk."：</div>";
                 $this->printkeys($kkv,$index);
                 $index--;
             }
             else{
-                echo "<div style='padding-left: ".($index*20)."px'>".$kk."：".$kkv."</div>";
+                echo "<div style='padding-left: ".($index*$step)."px'>".$kk."：".$kkv."</div>";
             }
 
         }
