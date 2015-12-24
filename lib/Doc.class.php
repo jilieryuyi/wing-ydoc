@@ -191,11 +191,11 @@ class Doc{
                 unset($t[0]);
                 unset($k[0]);
 
-                $tt=array();
+                $kt=array();
                 while($_k=array_shift($k)){
-                    $tt[]="[\"".$_k."\"]";
+                    $kt[]="[\"".$_k."\"]";
                 }
-                eval("\$keys".implode("",$tt)."=\"".trim(implode("",$t))."\";");
+                eval("\$keys".implode("",$kt)."=\"".trim(implode("",$t))."\";");
             }
         }
         return $keys;
