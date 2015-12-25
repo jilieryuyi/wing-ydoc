@@ -8,38 +8,146 @@ namespace Doc;
 include_once('demo.php');
 include_once('lib/Doc.class.php');
 
-class DocCreater{
 
-    public function printkeys($keys,&$index){
-        $step=20;
-        foreach($keys as $k=>$v){
-            if(is_array($v)){
-                echo "<div style='padding-left: ".($index*$step)."px'>".$k."：</div>";
-                $index++;
-                $this->printkeys($v,$index);
-                $index--;
-            }
-            else{
-                echo "<div style='padding-left: ".($index*$step)."px'>".$k."：".$v."</div>";
-            }
+if(isset($_REQUEST["c"])&&isset($_REQUEST["f"])){
+    //路由测试支持
+    $t=new $_REQUEST["c"]();
+    echo call_user_func_array(array($t,$_REQUEST["f"]),array($_REQUEST["a"],$_REQUEST["b"]));
+    exit;
+}
 
+function printkeys($keys,&$index){
+    $step=20;
+    foreach($keys as $k=>$v){
+        if(is_array($v)){
+            echo "<div style='padding-left: ".($index*$step)."px'>".$k."=></div>";
+            $index++;
+            printkeys($v,$index);
+            $index--;
         }
-    }
+        else{
+            echo "<div style='padding-left: ".($index*$step)."px'>".$k."=>".$v."</div>";
+        }
 
-    public function create($class) {
-        ob_start();
-        echo '
-        <html>
-        <head>
+    }
+}
+
+
+
+$class      ="Doc\\demo";
+$objDoc     =new \Doc($class);
+$methods    =$objDoc->getMethods();
+$classdocstr=$objDoc->getClassDoc();
+//快速格式化
+$classdoc   =$objDoc->docFormat($classdocstr);
+//var_dump($classdoc);
+//格式化的结果
+/*
+ array(8) {
+          ["title"]=>
+          string(27) "这个是类的注释标题"
+          ["explain"]=>
+          string(21) "这个是类的说明"
+          ["author"]=>
+          string(21) "这个是类的作者"
+          ["create"]=>
+          string(38) "2015-12-20 这个是类的创建时间"
+          ["change"]=>
+          string(44) "2015-12-25 这个是类的最后修改时间"
+          ["changeby"]=>
+          string(33) "zb 这个是类的最后修改人"
+          ["email"]=>
+          string(42) "297341015@qq.com这个是创建者的email"
+          ["abc"]=>
+          string(27) "这个是自定义的注释"
+        }
+ * */
+//获取标题---其实方法就是对应key的名字 使用简单吧 先调用getClassDoc 获取到原生注释
+//再将对应的key作为方法名直接使用即可得到相应的注释
+//有可能返回的是数组哦，如果有两个以上相同的key的话
+//$objDoc->abc($classdocstr);获取到自定义注释abc
+?>
+
+    <html>
+    <head>
         <style>
-        textarea{ width:500px; height:120px;}
+            textarea{ width:500px; height:120px;}
+            pre {
+                background-color: transparent;
+                border: 1px solid #eaeaea;
+                line-height: 1.2;
+                margin-bottom: 1.6em;
+                max-width: 100%;
+                overflow: auto;
+                padding: 0.8em;
+                white-space: pre;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+                font-size: 14px;
+            }
+            h2{
+
+            }
+            body{
+                background: #ddd;
+                margin: 0;
+                padding: 0;
+            }
+            .container{
+                width: 800px;
+                margin: 0 auto;
+                background: #fff;
+                padding: 3% 5%;
+            }
+            .block{
+                background: #f8f8f8f8;
+                background-color: transparent;
+                border: 1px solid #eaeaea;
+                padding: 0.8em;
+                word-wrap: break-word;
+                font-size: 14px;
+                line-height: 2.2;
+                margin: 20px 0;
+            }
+            .tag{
+                display: inline-block;
+                width: 100px;
+                text-align: right;
+                padding-right: 8px;
+            }
+            .params div{
+                border-bottom: #666;
+            }
+            .params div label{
+                display: inline-block;
+                text-align: center;
+                padding: 0 5px;
+            }
+            .index{
+                width: 36px;
+            }
+            .type{
+                width: 50px;
+            }
+            .key{
+                width: 50px;
+            }
+            .default{
+                width: 80px;
+            }
+            .demo{
+                width: 50px;
+            }
+            .explain{
+                width: 300px;
+            }
         </style>
         <script src="/static/js/jquery.js"></script>
-        <script src="/static/js/jquery.json-2.4.min.js"></script>';
-                echo '<script>
+        <script src="/static/js/jquery.json-2.4.min.js"></script>
+        <script>
             function ontest(dom,url){
-                var parent=$(dom).parents(".api-item");
-                var datas=\'\';
+                var parent=$(dom).parents(".block");
+                var datas='';
                 parent.find("input.params").each(function(index,ele){
                     datas+=$(ele).attr("name")+"="+encodeURIComponent($(ele).val())+"&";
                 });
@@ -47,7 +155,7 @@ class DocCreater{
                     type:"POST",
                     data:datas,
                     url:url+"&"+datas,
-                        success:function(msg){
+                    success:function(msg){
                         if(typeof msg=="object"){
                             msg=$.toJSON(msg);
                         }
@@ -59,126 +167,120 @@ class DocCreater{
                     }
                 });
             }
-        </script>'."\n".'
-        </head>'."\n".'
-        <body>'."\n";
+        </script>
+    </head>
+    <body>
+    <div class="container">
+        <h2><?php echo $class;?></h2>
+        <h2><?php echo $objDoc->title($classdocstr);?></h2>
+        <div><?php echo $classdoc["explain"];?></div>
 
-
-        $objDoc     =new \Doc($class);
-        $methods    =$objDoc->getMethods();
-        $classdocstr=$objDoc->getClassDoc();
-        //快速格式化
-        $classdoc   =$objDoc->docFormat($classdocstr);
-        //var_dump($classdoc);
-        //格式化的结果
-        /*
-         array(8) {
-                  ["title"]=>
-                  string(27) "这个是类的注释标题"
-                  ["explain"]=>
-                  string(21) "这个是类的说明"
-                  ["author"]=>
-                  string(21) "这个是类的作者"
-                  ["create"]=>
-                  string(38) "2015-12-20 这个是类的创建时间"
-                  ["change"]=>
-                  string(44) "2015-12-25 这个是类的最后修改时间"
-                  ["changeby"]=>
-                  string(33) "zb 这个是类的最后修改人"
-                  ["email"]=>
-                  string(42) "297341015@qq.com这个是创建者的email"
-                  ["abc"]=>
-                  string(27) "这个是自定义的注释"
-                }
-         * */
-        //获取标题---其实方法就是对应key的名字 使用简单吧 先调用getClassDoc 获取到原生注释
-        //再将对应的key作为方法名直接使用即可得到相应的注释
-        //有可能返回的是数组哦，如果有两个以上相同的key的话
-        echo "<h2>",$class,"</h2>";
-        echo "<h2>",$objDoc->title($classdocstr),"</h2>";
-        //$objDoc->abc($classdocstr);获取到自定义注释abc
-        echo $classdoc["explain"],"<br/>";
-        echo "作者：",$classdoc["author"],"<br/>";
-        echo "创建时间：",$classdoc["create"],"<br/>";
-        echo "最后修改：",$classdoc["change"],"<br/>";
-        echo "最后修改人：",$classdoc["changeby"],"<br/>";
-        echo "邮箱：",$classdoc["email"],"<br/>";
-
+        <div class="block">
+            <div><span class="tag">作者：</span><?php echo $classdoc["author"];?></div>
+            <div><span class="tag">创建时间：</span><?php echo $classdoc["create"];?></div>
+            <div><span class="tag">最后修改：</span><?php  echo $classdoc["change"];?></div>
+            <div><span class="tag">最后修改人：</span><?php  echo $classdoc["changeby"];?></div>
+            <div><span class="tag">邮箱：</span><?php  echo $classdoc["email"];?></div>
+        </div>
+    <?php
         //遍历所有的方法
         foreach($methods as $m){
-            //判断是公有的方法 并且不是继承来的方法
-            if($m->isPublic()&&$m->class==$class){
-                echo "<div class=\"api-item\">\n";
+    //判断是公有的方法 并且不是继承来的方法
+    if ($m->isPublic() && $m->class == $class){
+    $doc = $m->getDocComment();
+    $params = $objDoc->getDocParams($doc);
+    $returns = $objDoc->getDocReturns($doc);
+    $keys = $objDoc->getDocReturnKeys($doc);
 
-                $doc=$m->getDocComment();
-                echo "<h3>".$m->getName()."</h3>\n";
-                echo "<h4>".$objDoc->title($doc)."</h4>\n";
-                echo $objDoc->explain($doc),"<br/>";
-                echo "协议：<br/>&nbsp;&nbsp;&nbsp;&nbsp;".
-                    $objDoc->protocol($doc),"<br/><br/>";
-
-                echo "参数<br/>";
-                $params=$objDoc->getDocParams($doc);
-                if(!is_array($params)||count($params)<=0){
-                    echo "&nbsp;&nbsp;&nbsp;&nbsp;无<br/>";
-                }else{
-                    foreach($params as $i=>$v){
-                        echo "&nbsp;&nbsp;&nbsp;&nbsp;",($i+1),"、",$v["key"],"&nbsp;&nbsp;",$v["explain"]," ","  类型：",$v["type"],"  默认值：".$v["default"]," 实例:".$v["demo"];
-                        echo "<br/>";
-                    }
-                }
-                echo "<br/>";
-                echo "<br/>";
+    ?>
 
 
-                $returns=$objDoc->getDocReturns($doc);
+        <h3><?php echo $m->getName(); ?></h3>
+        <h4><?php echo $objDoc->title($doc); ?></h4>
 
-                echo "返回值：<br/>";
-                echo "&nbsp;&nbsp;&nbsp;&nbsp;类型：",$returns["type"],"<br/>";
-                echo "&nbsp;&nbsp;&nbsp;&nbsp;返回实例：",$returns["demo"],"<br/><br/>";
+        <div><?php echo $objDoc->explain($doc); ?></div>
+        <div class="block">
+            <div><span class="tag">协议：</span> <?php echo $objDoc->protocol($doc); ?></div>
+        </div>
+        <div>参数</div>
+        <div class="block params">
+        <?php
+        if (!is_array($params) || count($params) <= 0){
+        ?>
+            <div>无</div>
+        <?php
+        }else {
+            ?>
+            <div>
+                <label class="index">序号</label>
+                <label class="key">字段</label>
+                <label class="type">类型</label>
+                <label class="default">默认值</label>
+                <label class="demo">实例</label>
+                <label class="explain">说明</label>
+            </div>
+            <?php
+            foreach ($params as $i => $v) {
+                ?>
 
-
-                $keys=$objDoc->getDocReturnKeys($doc);
-
-                echo "返回字段：<br/>";
-
-                $keyindex=0;
-                $this->printkeys($keys,$keyindex);
-                echo "<br/><br/>";
-
-
-                echo "测试：<br/>";
-                foreach($params as $i=>$v){
-                    echo "参数：",$v["explain"]," ",$v["key"]," <input class='params' name='".$v["key"]."' type='input' value='".$v["default"]."'/>";
-                    echo "<br/>";
-                }
-                echo "返回值：<br/>";
-                echo "<input onclick=\"ontest(this,'/test.php?c=Doc\\\\demo&f=".$m->getName()."')\" type='button' value='测试'/><br/>";
-                echo "<textarea class='result'></textarea>";
-
-                echo "<br/><br/>";
-                echo "</div>\n";
+                <div>
+                            <label class="index"><?php echo($i + 1); ?></label>
+                            <label class="key"><?php echo $v["key"]; ?></label>
+                            <label class="type"><?php echo $v["type"]; ?></label>
+                            <label class="default"><?php echo $v["default"]; ?></label>
+                            <label class="demo"><?php echo $v["demo"]; ?></label>
+                            <label class="explain"><?php echo $v["explain"]; ?></label>
+                </div>
+                <?php
             }
-
-
         }
-        echo "</body>\n</html>";
-        $content=ob_get_contents();
-        ob_end_clean();
+        ?>
+        </div>
 
 
-        echo $content;
+        <div>返回值</div>
+        <div class="block">
+            <div><span class="tag">类型：</span><?php echo $returns["type"]; ?></div>
+            <div><span class="tag">返回实例：</span><?php echo $returns["demo"]; ?></div>
+        </div>
+
+
+    <div>返回字段：</div>
+        <div class="block">
+        <?php
+        $keyindex = 0;
+        printkeys($keys, $keyindex);
+        ?>
+        </div>
+
+    <div>测试</div>
+        <div class="block">
+    <?php
+    foreach ($params as $i => $v) {
+        ?>
+        <div>
+            <span class="tag">参数<?php echo $v["key"]; ?>：</span>
+
+            <input class='params' name='<?php echo $v["key"];?>' type='input' value='<?php  echo $v["default"];?>'/>
+        </div>
+    <?php } ?>
+    <div><span class="tag">返回值：</span>
+
+
+        <input onclick="ontest(this,'/test.php?c=Doc\\demo&f=<?php echo $m->getName(); ?>')" type='button'
+               value='测试'/>
+    </div>
+            <div style="padding-left: 115px;"> <textarea class='result'></textarea></div>
+            </div>
+
+    <?php
+    }
 
     }
-}
 
+    ?>
 
-//测试支持
-if(isset($_REQUEST["c"])&&isset($_REQUEST["f"])){
-    $t=new $_REQUEST["c"]();
-    echo call_user_func_array(array($t,$_REQUEST["f"]),array($_REQUEST["a"],$_REQUEST["b"]));
-}else{
-    //打印文档
-    $doc=new DocCreater();
-    $doc->create('Doc\\demo');
-}
+    </div>
+    </body>
+    </html>
+

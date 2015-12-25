@@ -4,7 +4,7 @@ namespace Doc;
 /**
  * @title 这个是类的注释标题
  * @explain 这个是类的说明
- * @author 这个是类的作者
+ * @author xa 这个是类的作者
  * @create 2015-12-20 这个是类的创建时间
  * @change 2015-12-25 这个是类的最后修改时间
  * @changeby zb 这个是类的最后修改人
