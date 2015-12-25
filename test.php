@@ -197,7 +197,10 @@ $classdoc   =$objDoc->docFormat($classdocstr);
 
         <h3><?php echo $m->getName(); ?></h3>
         <h4><?php echo $objDoc->title($doc); ?></h4>
-
+        <div>url</div>
+        <div class="block">
+        <div>/test.php?c=Doc\demo&f=<?php echo $m->getName(); ?></div>
+        </div>
         <div><?php echo $objDoc->explain($doc); ?></div>
         <div class="block">
             <div><span class="tag">协议：</span> <?php echo $objDoc->protocol($doc); ?></div>
