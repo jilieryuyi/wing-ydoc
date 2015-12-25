@@ -202,8 +202,9 @@ $classdoc   =$objDoc->docFormat($classdocstr);
         <div>/test.php?c=Doc\demo&f=<?php echo $m->getName(); ?></div>
         </div>
         <div><?php echo $objDoc->explain($doc); ?></div>
+        <div>协议</div>
         <div class="block">
-            <div><span class="tag">协议：</span> <?php echo $objDoc->protocol($doc); ?></div>
+            <div><?php echo $objDoc->protocol($doc); ?></div>
         </div>
         <div>参数</div>
         <div class="block params">
