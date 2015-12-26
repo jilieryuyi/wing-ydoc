@@ -69,6 +69,7 @@ $classdoc = $objDoc->docFormat($classdocstr);
 <html>
 <head>
     <title>ydoc自动化构建文档-将代码注释自动转化为文档</title>
+    <meta charset="UTF-8">
     <style>
         textarea {
             width: 500px;
