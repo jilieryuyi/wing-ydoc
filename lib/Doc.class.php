@@ -246,6 +246,18 @@ class Doc{
                 $param=trim(preg_replace("/params/","",$line,1));
                 $param=trim(preg_replace("/param/","",$param,1));
                 $param=explode(" ",$param);
+
+                $lastk=0;
+                foreach($param as $k=>$v){
+                    if(strpos($v,"=")!==false)$lastk=$k;
+                }
+
+                foreach($param as $k=>$v){
+                    if($k>$lastk)
+                        $param[$lastk].=" ".$v;
+                }
+
+
                 $temp=array();
                 foreach($param as $pv){
                     $pt=explode("=",$pv);
