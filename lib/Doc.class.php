@@ -196,7 +196,7 @@ class Doc{
                 while($_k=array_shift($k)){
                     $kt[]="[\"".$_k."\"]";
                 }
-                eval("\$keys".implode("",$kt)."=\"".trim(implode("",$t))."\";");
+                eval("\$keys".implode("",$kt)."=\"".trim(implode(" ",$t))."\";");
             }
         }
         return $keys;
